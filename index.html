@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ja" ng-app="app">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Landpia Demo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+      td.action {
+        padding-top: .5rem;
+        padding-bottom: .5rem;
+      }
+    </style>
+  </head>
+
+  <body ng-controller="LandpiaController as self">
+    <div class="container py-5">
+      <h1 class="h3 mb-4">Landpia Demo</h1>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>物件名</th>
+            <th>タイプ</th>
+            <th>広さ</th>
+            <th>賃料</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr ng-repeat="prop in self.properties">
+            <td>{{ prop.name }}</td>
+            <td>{{ prop.type }}</td>
+            <td>{{ prop.mat }}</td>
+            <td>
+              <div ng-if="!prop.campaignPrice">{{ prop.price | number }}円</div>
+              <div ng-if="prop.campaignPrice"><strike>{{ prop.price | number }}円</strike> → {{ prop.campaignPrice | number }}円</td></div>
+            <td class="action">
+              <button type="button" class="btn btn-primary btn-sm" ng-click="self.reservation(prop)">お申し込み</button>
+              <button type="button" class="btn btn-secondary btn-sm" ng-click="self.waiting(prop)">空き待ち予約</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <form id="form" method="post" action="{{ self.url }}">
+        <input type="hidden" name="via" ng-value="self.selectedProp.via">
+        <input type="hidden" name="code" ng-value="self.selectedProp.code">
+        <input type="hidden" name="name" ng-value="self.selectedProp.name">
+        <input type="hidden" name="type" ng-value="self.selectedProp.type">
+        <input type="hidden" name="mat" ng-value="self.selectedProp.mat">
+        <input type="hidden" name="price" ng-value="self.selectedProp.price">
+        <input type="hidden" name="campaign_price" ng-value="self.selectedProp.campaignPrice">
+      </form>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap.js"></script>
+    <script>
+      angular.module('app', ['ui.bootstrap']).config(function($locationProvider) {
+        $locationProvider.html5Mode({
+          enabled: true,
+          requireBase: false
+        });
+      }).controller('LandpiaController', function($location, $sce, $timeout) {
+        const self = this;
+        const baseUrl = 'https://staging-dot-landpia-register.appspot.com/';
+
+        self.properties = [{
+        //   via: 'spaceplus',
+        //   code: '1520406500-483623',
+        //   name: 'スペースプラス渋谷区鶯谷町',
+        //   type: 'TA',
+        //   mat: '0.3畳',
+        //   price: 5370,
+        //   campaignPrice: 2685
+        // }, {
+        //   via: 'spaceplus',
+        //   code: '1529027773-875773',
+        //   name: 'スペースプラス南青山店',
+        //   type: 'TD',
+        //   mat: '1.0畳',
+        //   price: 17500,
+        //   campaignPrice: 8750
+        // }, {
+        //   via: 'spaceplus',
+        //   code: '1568849377-738747',
+        //   name: 'スペースプラス フィガロ市ヶ谷店',
+        //   type: 'TA',
+        //   mat: '0.5畳',
+        //   price: 9000,
+        //   campaignPrice: 0
+        // }, {
+        //   via: 'spaceplus',
+        //   code: '1343912825-430189',
+        //   name: 'スペースプラス西小山店',
+        //   type: 'TF',
+        //   mat: '1.5畳',
+        //   price: 15239,
+        //   campaignPrice: 0
+        // }, {
+        //   via: 'spaceplus',
+        //   code: '1343912824-723397',
+        //   name: 'スペースプラス中和田',
+        //   type: 'B',
+        //   mat: '4.1畳',
+        //   price: 20000,
+        //   campaignPrice: 0
+
+          via: 'spaceplus',
+          code: '3718',
+          name: 'スペースプラス上田',
+          type: 'A',
+          mat: '8.4',
+          price: 26400,
+          campaignPrice: 13200
+        }];
+
+        self.reservation = function(prop) {
+          self.url = $sce.trustAsResourceUrl(getBaseUrl());
+          self.selectedProp = prop;
+          submit();
+        };
+
+        self.waiting = function(prop) {
+          self.url = $sce.trustAsResourceUrl(getBaseUrl() + 'waiting/');
+          self.selectedProp = prop;
+          submit();
+        };
+
+        function getBaseUrl() {
+          const queryString = $location.search();
+          if (queryString && 'version' in queryString) {
+            return baseUrl.replace('staging', queryString.version);
+          }
+          return baseUrl;
+        }
+
+        function submit() {
+          $timeout(function() {
+            document.getElementById('form').submit();
+          }, 1000);
+        }
+      });
+    </script>
+  </body>
+</html>
