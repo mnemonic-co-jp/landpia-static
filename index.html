@@ -32,7 +32,7 @@
           <tr ng-repeat="prop in self.properties">
             <td>{{ prop.name }}</td>
             <td>{{ prop.type }}</td>
-            <td>{{ prop.mat }}</td>
+            <td>{{ prop.mat }} 畳</td>
             <td>
               <div ng-if="!prop.campaignPrice">{{ prop.price | number }}円</div>
               <div ng-if="prop.campaignPrice"><strike>{{ prop.price | number }}円</strike> → {{ prop.campaignPrice | number }}円</td></div>
@@ -72,7 +72,7 @@
           code: '2793',
           name: 'スペースプラス八街',
           type: 'B',
-          mat: '3.9畳',
+          mat: '3.9',
           price: 16500,
           campaignPrice: 8250
         }, {
